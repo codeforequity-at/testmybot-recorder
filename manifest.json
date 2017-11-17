@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+  "name": "TestMyBot Testcase Recorder",
+  "description": "TestMyBot Testcase Recorder allows to record your Chatbot conversations and to replay them anytime you want for automated testing.",
+  "version": "0.0.1",
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "browser_action": {
+    "default_title": "show vue"
+  },  
+  
+  "permissions": [
+    "activeTab",
+    "storage"
+  ]
+}
