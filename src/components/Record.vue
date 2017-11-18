@@ -7,12 +7,42 @@
 				</div>
 			</div>
 		</div>
+		<div class="row">
+			
+      {{ tabs }}
+
+		
+		
+		</div>
+		
 	</div>
 </template>
 
 <script>
+
+import bs from '../helpers/browsersupport';
+
+
 export default {
   name: 'Record',
+  data() {
+    return {
+      tabs: null,
+      tabSelected: null,
+    };
+  },
+  created() {
+    this.getTabs();
+  },
+  methods: {
+    getTabs() {
+      bs.getMatchingTabs('*://www.messenger.com/*').then((tabs) => {
+        this.tabs = tabs;
+      }, (err) => {
+        console.log(err);
+      });
+    },
+  },
 };
 </script>
 
