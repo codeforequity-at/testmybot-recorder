@@ -5,7 +5,7 @@
 				<AppNav />
 			</div>
 			<div class="col-lg-10 col-md-8">
-				<router-view/>
+				<router-view class="pl-2"/>
 			</div>
 		</div>
   </div>

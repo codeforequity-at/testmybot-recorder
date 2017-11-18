@@ -13,8 +13,8 @@
   },  
   
   "permissions": [
-    "activeTab",
     "storage",
-		"tabs"
+		"tabs",
+		"*://www.messenger.com/*"
   ]
 }

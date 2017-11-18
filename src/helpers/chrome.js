@@ -1,4 +1,7 @@
 
+function isAvailable() {
+  return (chrome && chrome.tabs && chrome.extension);
+}
 
 function getMatchingTabs(url) {
   return new Promise((resolve, reject) => {
@@ -12,6 +15,7 @@ function getMatchingTabs(url) {
           resolve(tabs.map(tab => (
             {
               id: tab.id,
+              index: tab.index,
               url: tab.url,
               title: tab.title,
               favIconUrl: tab.favIconUrl,
@@ -26,6 +30,18 @@ function getMatchingTabs(url) {
   });
 }
 
+function prepareTab(tab) {
+  return new Promise((resolve) => {
+    chrome.tabs.executeScript(tab.id, { file: '/node_modules/jquery/dist/jquery.min.js' }, () => {
+      chrome.tabs.executeScript(tab.id, { file: '/chrome/content_script.js' }, () => {
+        resolve();
+      });
+    });
+  });
+}
+
 export default {
+  isAvailable,
   getMatchingTabs,
+  prepareTab,
 };

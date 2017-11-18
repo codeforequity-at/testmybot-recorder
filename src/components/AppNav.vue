@@ -1,25 +1,25 @@
 <template>
   <div>
     <div class="row">
-      <div class="thumbnail">
-      <img class="img-responsive" src="../assets/testmybot_logo.png">
+      <div class="mb-2">
+        <img class="img-fluid img-thumbnail" src="../assets/testmybot_logo.png">
       </div>
     </div>
     <div class="row">
       <div class="col-xs-12">
-        <ul class="nav nav-pills nav-stacked">
-          <router-link tag="li" to="/" exact-active-class="active">
-            <a>Dashboard</a>
-          </router-link>  
-          <router-link tag="li" to="/Record" exact-active-class="active">
-            <a>1. Record</a>
-          </router-link>  
-          <router-link tag="li" to="/Manage" exact-active-class="active">
-            <a>2. Organize</a>
-          </router-link>  
-          <router-link tag="li" to="/Run" exact-active-class="active">
-            <a>3. Run</a>
-          </router-link>  
+        <ul class="nav nav-pills flex-column">
+          <li class="nav-item">
+            <router-link to="/" exact-active-class="active" class="nav-link">Dashboard</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/Record" exact-active-class="active" class="nav-link">1. Record</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/Manage" exact-active-class="active" class="nav-link">2. Organize</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/Run" exact-active-class="active" class="nav-link">3. Run</router-link>
+          </li>
         </ul>
       </div>
     </div>
