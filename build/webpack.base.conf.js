@@ -55,7 +55,9 @@ module.exports = {
         options: {
           limit: 10000,
           name: utils.assetsPath('img/[name].[hash:7].[ext]'),
-          publicPath: '../../'
+          publicPath: process.env.NODE_ENV === 'production'
+            ? config.build.assetsPublicPath
+            : config.dev.assetsPublicPath
         }
       },
       {
@@ -64,7 +66,9 @@ module.exports = {
         options: {
           limit: 10000,
           name: utils.assetsPath('media/[name].[hash:7].[ext]'),
-          publicPath: '../../'
+          publicPath: process.env.NODE_ENV === 'production'
+            ? config.build.assetsPublicPath
+            : config.dev.assetsPublicPath
         }
       },
       {
@@ -73,7 +77,9 @@ module.exports = {
         options: {
           limit: 10000,
           name: utils.assetsPath('fonts/[name].[hash:7].[ext]'),
-          publicPath: '../../'
+          publicPath: process.env.NODE_ENV === 'production'
+            ? config.build.assetsPublicPath
+            : config.dev.assetsPublicPath
         }
       }
     ]
