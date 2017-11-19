@@ -28,6 +28,10 @@ const mock = {
       resolve();
     });
   },
+  startRecording(tab, cb) {
+    cb({ action: 'record', from: 'me', text: 'hugo hugo hugo' });
+    return () => { };
+  },
 };
 
 const exp = Object.assign({}, mock);

@@ -39,7 +39,29 @@
         </b-alert>
       </div>
 		</div>
- <hr/>		
+    <div class="row" v-if="showErrorMessage">
+      <div class="col-sm-12">
+        <b-alert show variant="danger">
+          {{ showErrorMessage }}
+        </b-alert>
+      </div>
+    </div>
+    <hr/>
+    <div class="row" v-if="recordedMessages">
+      <div class="col-sm-12">
+        <b-list-group-item 
+          v-for="recordedMessage in recordedMessages"
+          :key="recordedMessage.index">
+
+          <b-media>
+            <i slot="aside" class="fa fa-android" v-if="recordedMessage.from === 'bot'"></i>
+            <i slot="aside" class="fa fa-user" v-if="recordedMessage.from === 'me'"></i>
+            <p>{{ recordedMessage.text }}</p>
+          </b-media>
+        
+        </b-list-group-item>      
+      </div>
+    </div>
 	</div>
 </template>
 
@@ -54,6 +76,9 @@ export default {
       tabs: null,
       selectedTab: null,
       recordingState: 'idle',
+      showErrorMessage: null,
+      stopRecordingCallback: null,
+      recordedMessages: null,
     };
   },
   created() {
@@ -83,12 +108,27 @@ export default {
       return this.recordingState !== 'idle';
     },
     startRecording() {
-      this.recordingState = 'start';
+      this.showErrorMessage = null;
+      this.recordingState = 'connecting';
+      this.recordedMessages = [];
       bs.prepareTab(this.selectedTab).then(() => {
-        this.recordingState = 'connecting';
+        this.stopRecordingCallback = bs.startRecording(this.selectedTab,
+          (message) => {
+            console.log(message);
+            this.recordedMessages.push(
+              Object.assign(message, { index: this.recordedMessages.length }));
+          });
+        this.recordingState = 'recording';
+      }, (err) => {
+        this.showErrorMessage = `error prepare tabs: ${err}`;
+        this.recordingState = 'idle';
       });
     },
     stopRecording() {
+      if (this.stopRecordingCallback) {
+        this.stopRecordingCallback();
+        this.stopRecordingCallback = null;
+      }
       this.recordingState = 'idle';
     },
   },
