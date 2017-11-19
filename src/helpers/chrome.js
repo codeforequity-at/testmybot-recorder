@@ -20,6 +20,7 @@ function getMatchingTabs(url) {
               title: tab.title,
               favIconUrl: tab.favIconUrl,
               status: tab.status,
+              ready: (tab.status === 'complete'),
             }
           )));
         } else {

@@ -1,10 +1,7 @@
 import Chrome from './chrome';
 
-export default {
-  getMatchingTabs(url) {
-    if (Chrome.isAvailable()) {
-      return Chrome.getMatchingTabs(url);
-    }
+const mock = {
+  getMatchingTabs() {
     return new Promise((resolve) => {
       resolve([
         {
@@ -13,6 +10,7 @@ export default {
           url: 'http://www.messenger.com',
           title: 'Messenger',
           status: 'completed',
+          ready: true,
         },
         {
           id: 2,
@@ -20,16 +18,21 @@ export default {
           url: 'http://www.messenger.com',
           title: 'Messenger',
           status: 'completed',
+          ready: true,
         },
       ]);
     });
   },
-  prepareTab(tab) {
-    if (Chrome.isAvailable()) {
-      return Chrome.prepareTab(tab);
-    }
+  prepareTab() {
     return new Promise((resolve) => {
       resolve();
     });
   },
 };
+
+const exp = Object.assign({}, mock);
+if (Chrome.isAvailable()) {
+  Object.assign(exp, Chrome);
+}
+
+export default exp;
