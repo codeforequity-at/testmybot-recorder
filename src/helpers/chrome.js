@@ -36,14 +36,22 @@ function prepareTab(tab) {
     chrome.tabs.sendMessage(tab.id, { action: 'ping' }, (response) => {
       if (response && response.action === 'pong') {
         console.log(`content script already present in tab ${tab.id}`);
-        resolve();
+        if (response.err) {
+          reject(response.err);
+        } else {
+          resolve();
+        }
       } else {
         console.log(`injecting content script in tab ${tab.id}`);
         chrome.tabs.executeScript(tab.id, { file: '/node_modules/jquery/dist/jquery.min.js' }, () => {
           chrome.tabs.executeScript(tab.id, { file: '/chrome/content_script.js' }, () => {
             chrome.tabs.sendMessage(tab.id, { action: 'ping' }, (response1) => {
               if (response1 && response1.action === 'pong') {
-                resolve();
+                if (response1.err) {
+                  reject(response1.err);
+                } else {
+                  resolve();
+                }
               } else {
                 reject('content script did not answer to ping');
               }
