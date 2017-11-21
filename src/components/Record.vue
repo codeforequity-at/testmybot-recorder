@@ -61,20 +61,7 @@
         </div>
         <div class="row">
           <div class="col-sm-12">
-            <b-list-group-item 
-              v-for="recordedMessage in recordedMessages"
-              :key="recordedMessage.index">
-
-              <b-media right-align v-if="recordedMessage.from === 'me'">
-                <i slot="aside" class="fa fa-lg fa-user"></i>
-                <p class="text-right">{{ recordedMessage.text }}</p>
-              </b-media>
-              <b-media v-if="recordedMessage.from === 'bot'">
-                <i slot="aside" class="fa fa-lg fa-android" ></i>
-                <p>{{ recordedMessage.text }}</p>
-              </b-media>
-            
-            </b-list-group-item>
+            <chat-view v-bind:convo="recordedMessages"></chat-view>
           </div>
         </div>
       </div>
@@ -103,10 +90,12 @@
 <script>
 
 import { mapActions } from 'vuex';
-import bs from '../helpers/browsersupport';
+import ChatView from '@/components/partial/ChatView';
+import bs from '@/helpers/browsersupport';
 
 export default {
   name: 'Record',
+  components: { ChatView },
   data() {
     return {
       tabs: null,
@@ -121,6 +110,9 @@ export default {
   },
   created() {
     this.getTabs();
+  },
+  destroyed() {
+    this.stopRecording();
   },
   methods: {
     ...mapActions([

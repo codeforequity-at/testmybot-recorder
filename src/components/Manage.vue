@@ -30,7 +30,12 @@
         </div>
         <div class="row">
           <div class="col-sm-12">
-          {{ selectedTestcase.convo }}
+            <a :href="selectedTestcase.url" target="_blank">Open Facebook Messenger</a>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <chat-view v-bind:convo="selectedTestcase.convo"></chat-view>
           </div>
         </div>
       </div>
@@ -41,13 +46,20 @@
 <script>
 
 import { mapGetters } from 'vuex';
+import ChatView from '@/components/partial/ChatView';
 
 export default {
   name: 'Manage',
+  components: { ChatView },
   data() {
     return {
       selectedTestcase: null,
     };
+  },
+  created() {
+    if (this.allTestcases && this.allTestcases.length > 0) {
+      this.selectedTestcase = this.allTestcases[0];
+    }
   },
   computed: {
     ...mapGetters([
