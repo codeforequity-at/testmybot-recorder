@@ -32,6 +32,11 @@ const mock = {
     cb({ action: 'record', from: 'me', text: 'hugo hugo hugo' });
     return () => { };
   },
+  sendMessage() {
+    return new Promise((resolve) => {
+      resolve();
+    });
+  },
 };
 
 const exp = Object.assign({}, mock);

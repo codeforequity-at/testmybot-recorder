@@ -138,7 +138,7 @@ export default {
       });
     },
     isRecording() {
-      return this.recordingState !== 'idle';
+      return this.recordingState === 'recording';
     },
     startRecording() {
       this.showErrorMessage = null;

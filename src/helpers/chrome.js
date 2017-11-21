@@ -78,9 +78,26 @@ function startRecording(tab, cb) {
   };
 }
 
+function sendMessage(tab, text) {
+  return new Promise((resolve, reject) => {
+    chrome.tabs.sendMessage(tab.id, { action: 'sendtext', text }, (response) => {
+      if (response && response.action === 'sendtextResponse') {
+        if (response.err) {
+          reject(response.err);
+        } else {
+          resolve();
+        }
+      } else {
+        reject('content script did not answer to sendtext');
+      }
+    });
+  });
+}
+
 export default {
   isAvailable,
   getMatchingTabs,
   prepareTab,
   startRecording,
+  sendMessage,
 };
