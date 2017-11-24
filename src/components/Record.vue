@@ -37,7 +37,7 @@
         </b-button-group>
       </div>
       <div class="col-sm-5">
-        <b-alert show variant="info" v-if="isRecording()">
+        <b-alert show variant="info" v-if="recordingState !== 'idle'">
           <h4 class="alert-heading"><i class="fa fa-spinner fa-spin"></i> {{ recordingState }}</h4>      
         </b-alert>
         <b-alert show variant="danger" v-if="showErrorMessage">

@@ -13,8 +13,9 @@
   },  
   
   "permissions": [
+	"debugger",
     "storage",
-		"tabs",
-		"*://www.messenger.com/*"
+	"tabs",
+	"*://www.messenger.com/*"
   ]
 }

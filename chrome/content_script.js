@@ -60,17 +60,6 @@ function cleanString(str) {
   return str;
 }
 
-function _x(STR_XPATH) {
-    var xresult = document.evaluate(STR_XPATH, document, null, XPathResult.ANY_TYPE, null);
-    var xnodes = [];
-    var xres;
-    while (xres = xresult.iterateNext()) {
-        xnodes.push(xres);
-    }
-
-    return xnodes;
-}
-
 function onMessage(request, sender, sendResponse) {
   console.log('testmybot content script: onMessage ' + JSON.stringify(request));
   if (request.action === 'ping') {
@@ -79,44 +68,6 @@ function onMessage(request, sender, sendResponse) {
     } else {
       sendResponse({ action: 'pong', err: 'facebook messenger root document not bound' });
     }
-  } else if (request.action === 'sendtext') {
-    
-    var el1 = $(_x("//*[@class='_1mf _1mj']//following :: div[11]")).get(0);
-    var el2 = $(_x("//div[@class='_5rpb']/descendant::div[@class='_5rpu' and @role='combobox']")).get(0);
-    
-    $(el1).trigger({
-      type: 'click'
-    });
-    
-    $(el2).trigger ({
-        type: 'keypress', keyCode: 'A'.charCodeAt(0), which: 'A', charCode: 'A'
-    });
-    $(el2).trigger ({
-        type: 'keypress', keyCode: 13, which: 13, charCode: 13
-    });
-    /*
-    //var inputElement = $('div[role="main"] div[role="combobox"]').get(0);
-    var inputElement = $('div._1mf._1mj ').get(0);
-    
-    if (inputElement) {
-
-      $(inputElement).trigger({
-          type: 'click'
-      });
-    
-      $(document).trigger ({
-          type: 'keypress', keyCode: 'A'.charCodeAt(0), which: 'A', charCode: 'A'
-      });
-      $(document).trigger ({
-          type: 'keypress', keyCode: 13, which: 13, charCode: 13
-      });
-      sendResponse({action: 'sendtextResponse', err: null });
-      
-    } else {
-      sendResponse({action: 'sendtextResponse', err: 'input element not found' });
-    }
-    */
-    sendResponse({action: 'sendtextResponse', err: null });
   }
 }
 chrome.runtime.onMessage.addListener(onMessage);

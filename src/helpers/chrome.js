@@ -1,3 +1,4 @@
+import async from 'async';
 
 function isAvailable() {
   return (chrome && chrome.tabs && chrome.extension);
@@ -45,15 +46,23 @@ function prepareTab(tab) {
         console.log(`injecting content script in tab ${tab.id}`);
         chrome.tabs.executeScript(tab.id, { file: '/node_modules/jquery/dist/jquery.min.js' }, () => {
           chrome.tabs.executeScript(tab.id, { file: '/chrome/content_script.js' }, () => {
-            chrome.tabs.sendMessage(tab.id, { action: 'ping' }, (response1) => {
-              if (response1 && response1.action === 'pong') {
-                if (response1.err) {
-                  reject(response1.err);
+            async.retry({ times: 10, interval: 3000 }, (cb) => {
+              chrome.tabs.sendMessage(tab.id, { action: 'ping' }, (response1) => {
+                if (response1 && response1.action === 'pong') {
+                  if (response1.err) {
+                    cb(response1.err);
+                  } else {
+                    cb();
+                  }
                 } else {
-                  resolve();
+                  cb('content script did not answer to ping');
                 }
-              } else {
+              });
+            }, (err) => {
+              if (err) {
                 reject('content script did not answer to ping');
+              } else {
+                resolve();
               }
             });
           });

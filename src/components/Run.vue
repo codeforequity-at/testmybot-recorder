@@ -38,6 +38,7 @@
 <script>
 
 import { mapGetters } from 'vuex';
+import thenChrome from 'then-chrome';
 import bs from '@/helpers/browsersupport';
 
 export default {
@@ -72,13 +73,66 @@ export default {
     },
     runAll() {
       this.status = 'running';
-
       bs.getMatchingTabs('*://www.messenger.com/*').then((tabs) => {
+        const debuggee = { tabId: tabs[0].id };
+        thenChrome.debugger.attach(debuggee, '1.2').then(() => {
+          thenChrome.debugger.sendCommand(debuggee, 'Input.dispatchKeyEvent', {
+            modifiers: 0,
+            nativeVirtualKeyCode: 65,
+            text: '',
+            type: 'rawKeyDown',
+            unmodifiedText: '',
+            windowsVirtualKeyCode: 65,
+          });
+          thenChrome.debugger.sendCommand(debuggee, 'Input.dispatchKeyEvent', {
+            modifiers: 0,
+            nativeVirtualKeyCode: 0,
+            text: 'A',
+            type: 'char',
+            unmodifiedText: 'A',
+            windowsVirtualKeyCode: 0,
+          });
+          thenChrome.debugger.sendCommand(debuggee, 'Input.dispatchKeyEvent', {
+            modifiers: 0,
+            nativeVirtualKeyCode: 65,
+            text: '',
+            type: 'keyUp',
+            unmodifiedText: '',
+            windowsVirtualKeyCode: 65,
+          });
+          thenChrome.debugger.sendCommand(debuggee, 'Input.dispatchKeyEvent', {
+            modifiers: 0,
+            nativeVirtualKeyCode: 13,
+            text: '',
+            type: 'rawKeyDown',
+            unmodifiedText: '',
+            windowsVirtualKeyCode: 13,
+          });
+          thenChrome.debugger.sendCommand(debuggee, 'Input.dispatchKeyEvent', {
+            modifiers: 0,
+            nativeVirtualKeyCode: 0,
+            text: '\r',
+            type: 'char',
+            unmodifiedText: 'A',
+            windowsVirtualKeyCode: 0,
+          });
+          thenChrome.debugger.sendCommand(debuggee, 'Input.dispatchKeyEvent', {
+            modifiers: 0,
+            nativeVirtualKeyCode: 13,
+            text: '',
+            type: 'keyUp',
+            unmodifiedText: '',
+            windowsVirtualKeyCode: 13,
+          });
+        }).catch(e => console.log(e));
+
+        /*
         bs.sendMessage(tabs[0], 'hugo').then(() => {
           console.log('sent');
         }, (err) => {
           console.log(err);
         });
+        */
       });
     },
     stopAll() {
