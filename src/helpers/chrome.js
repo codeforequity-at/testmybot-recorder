@@ -1,4 +1,9 @@
 import async from 'async';
+import thenChrome from 'then-chrome';
+import { Key } from 'selenium-webdriver/lib/input';
+import keycodes from './keycodes';
+
+const PROTOCOL_VERSION = '1.2';
 
 function isAvailable() {
   return (chrome && chrome.tabs && chrome.extension);
@@ -36,7 +41,7 @@ function prepareTab(tab) {
   return new Promise((resolve, reject) => {
     chrome.tabs.sendMessage(tab.id, { action: 'ping' }, (response) => {
       if (response && response.action === 'pong') {
-        console.log(`content script already present in tab ${tab.id}`);
+        console.log(`content script already present in tab ${tab.id}  ${JSON.stringify(response)}`);
         if (response.err) {
           reject(response.err);
         } else {
@@ -49,6 +54,7 @@ function prepareTab(tab) {
             async.retry({ times: 10, interval: 3000 }, (cb) => {
               chrome.tabs.sendMessage(tab.id, { action: 'ping' }, (response1) => {
                 if (response1 && response1.action === 'pong') {
+                  console.log(`content script answered to ping ${JSON.stringify(response1)}`);
                   if (response1.err) {
                     cb(response1.err);
                   } else {
@@ -87,20 +93,95 @@ function startRecording(tab, cb) {
   };
 }
 
-function sendMessage(tab, text) {
+function openTestRunnerTab(url) {
   return new Promise((resolve, reject) => {
-    chrome.tabs.sendMessage(tab.id, { action: 'sendtext', text }, (response) => {
-      if (response && response.action === 'sendtextResponse') {
-        if (response.err) {
-          reject(response.err);
-        } else {
-          resolve();
-        }
+    thenChrome.tabs.create({ url, active: false }).then((tab) => {
+      prepareTab(tab).then(() => {
+        thenChrome.debugger.attach({ tabId: tab.id }, PROTOCOL_VERSION).then(() => {
+          console.log(`tab ${url} created ${tab.id}, content-script loaded, debugger attached, ready for test runner.`);
+          resolve(tab);
+        }).catch((err) => {
+          reject(err);
+        });
+      }).catch((err) => {
+        reject(err);
+      });
+    }).catch((err) => {
+      console.log(err);
+      reject(err);
+    });
+  });
+}
+
+function closeTestRunnerTab(tab) {
+  return new Promise((resolve, reject) => {
+    thenChrome.debugger.detach({ tabId: tab.id }).then(() => {
+      thenChrome.tabs.remove(tab.id).then(() => {
+        console.log(`tab removed ${tab.id}.`);
+        resolve();
+      }).catch((err) => {
+        reject(err);
+      });
+    }).catch((err) => {
+      reject(err);
+    });
+  });
+}
+
+function sendSingleChar(tab, char) {
+  const indexOfChar = keycodes.indexOf(char.toLocaleUpperCase());
+  const keyCode = indexOfChar >= 0 ? indexOfChar : 0;
+  let charCode = char;
+
+  if (char === Key.ENTER) {
+    charCode = '\r';
+  }
+
+  return new Promise((resolve, reject) => {
+    async.series([
+      (cb) => {
+        thenChrome.debugger.sendCommand({ tabId: tab.id }, 'Input.dispatchKeyEvent', {
+          modifiers: 0,
+          nativeVirtualKeyCode: keyCode,
+          text: '',
+          type: 'rawKeyDown',
+          unmodifiedText: '',
+          windowsVirtualKeyCode: keyCode,
+        }).then(() => cb()).catch(cb);
+      },
+      (cb) => {
+        thenChrome.debugger.sendCommand({ tabId: tab.id }, 'Input.dispatchKeyEvent', {
+          modifiers: 0,
+          nativeVirtualKeyCode: 0,
+          text: charCode,
+          type: 'char',
+          unmodifiedText: charCode,
+          windowsVirtualKeyCode: 0,
+        }).then(() => cb()).catch(cb);
+      },
+      (cb) => {
+        thenChrome.debugger.sendCommand({ tabId: tab.id }, 'Input.dispatchKeyEvent', {
+          modifiers: 0,
+          nativeVirtualKeyCode: keyCode,
+          text: '',
+          type: 'keyUp',
+          unmodifiedText: '',
+          windowsVirtualKeyCode: keyCode,
+        }).then(() => cb()).catch(cb);
+      },
+    ], (err) => {
+      if (err) {
+        reject(err);
       } else {
-        reject('content script did not answer to sendtext');
+        resolve();
       }
     });
   });
+}
+
+function sendMessage(tab, text) {
+  const arr = [...text, Key.ENTER];
+  return arr.reduce((res, char) => res.then(() => sendSingleChar(tab, char)), Promise.resolve());
 }
 
 export default {
@@ -108,5 +189,7 @@ export default {
   getMatchingTabs,
   prepareTab,
   startRecording,
+  openTestRunnerTab,
   sendMessage,
+  closeTestRunnerTab,
 };

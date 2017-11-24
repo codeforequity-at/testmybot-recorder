@@ -41,17 +41,19 @@ var observer = new MutationObserver(function(mutations) {
   
 $(document).ready(function() {
   console.log('testmybot content_script loading ...');
-  
-  target = $('div[role="main"]').get(0);
-  
-  if (target) {
-    // Configuration of the observer
-    var config = { attributes: false, childList:true, subtree: true };
-
-    // Pass in the target node, as well as the observer options
-    observer.observe(target, config);
-  }
+  startMutationObserver();
 });
+
+function startMutationObserver() {
+  target = $('div[role="main"]').get(0);
+  if (target) {
+    console.log('testmybot content_script starting mutation observer ...');
+    var config = { attributes: false, childList:true, subtree: true };
+    observer.observe(target, config);
+  } else {
+    console.log('testmybot content_script target node for mutation observer not found.');
+  }
+}
 
 function cleanString(str) {
   str = $.trim(str);
@@ -63,6 +65,9 @@ function cleanString(str) {
 function onMessage(request, sender, sendResponse) {
   console.log('testmybot content script: onMessage ' + JSON.stringify(request));
   if (request.action === 'ping') {
+    if (!target) {
+      startMutationObserver();
+    }
     if (target) {
       sendResponse({ action: 'pong'});
     } else {

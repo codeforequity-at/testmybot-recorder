@@ -32,7 +32,17 @@ const mock = {
     cb({ action: 'record', from: 'me', text: 'hugo hugo hugo' });
     return () => { };
   },
+  openTestRunnerTab() {
+    return new Promise((resolve) => {
+      resolve();
+    });
+  },
   sendMessage() {
+    return new Promise((resolve) => {
+      resolve();
+    });
+  },
+  closeTestRunnerTab() {
     return new Promise((resolve) => {
       resolve();
     });

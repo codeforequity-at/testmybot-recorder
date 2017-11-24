@@ -17,6 +17,7 @@
     "bootstrap-vue": "^1.1.0",
     "font-awesome": "^4.7.0",
     "jquery": "^3.2.1",
+    "selenium-webdriver": "^3.6.0",
     "then-chrome": "^1.0.7",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
