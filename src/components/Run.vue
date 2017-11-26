@@ -63,7 +63,7 @@
 
 <script>
 
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import testrunner from '@/helpers/testrunner';
 
 export default {
@@ -71,6 +71,7 @@ export default {
   computed: {
     ...mapGetters([
       'allTestcases',
+      'lastRun',
     ]),
   },
   data() {
@@ -88,22 +89,43 @@ export default {
     this.stopAll();
   },
   methods: {
+    ...mapActions([
+      'setLastRun',
+    ]),
     testcaseSelected(tc) {
       this.selectedTestcase = tc;
     },
     reset() {
       this.status = 'idle';
       if (this.allTestcases && this.allTestcases.length > 0) {
-        this.testcases = this.allTestcases.map(tc => ({
-          spec: tc,
-          status: 'idle', // 'running', 'success', 'failed'
-          log: [],
-          err: null,
-        }));
+        this.testcases = this.allTestcases.map((tc) => {
+          const testcase = {
+            spec: tc,
+            status: 'idle', // 'running', 'success', 'failed'
+            log: [],
+            err: null,
+          };
+          if (this.lastRun) {
+            const lastTestcaseResult = this.lastRun.find(l => l.name === tc.name);
+            if (lastTestcaseResult) {
+              testcase.status = lastTestcaseResult.status;
+              testcase.log = lastTestcaseResult.log;
+              testcase.err = lastTestcaseResult.err;
+            }
+          }
+          return testcase;
+        });
       }
     },
     runAll() {
-      testrunner.runTestsuite(this.testcases);
+      testrunner.runTestsuite(this.testcases).then(() => {
+        this.setLastRun(this.testcases.map(tc => ({
+          name: tc.spec.name,
+          status: tc.status,
+          log: tc.log,
+          err: tc.err,
+        })));
+      });
     },
     stopAll() {
     },

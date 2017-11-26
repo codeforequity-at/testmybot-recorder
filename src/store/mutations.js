@@ -1,7 +1,8 @@
 import * as types from './mutation-types';
 
 export const initialState = {
-  testcases: JSON.parse(window.localStorage.getItem(types.STORAGE_KEY) || '[]'),
+  testcases: JSON.parse(window.localStorage.getItem(types.STORAGE_KEY_TESTCASES) || '[]'),
+  lastrun: JSON.parse(window.localStorage.getItem(types.STORAGE_KEY_LASTRUN) || '[]'),
 };
 
 export const actions = {
@@ -15,10 +16,19 @@ export const actions = {
       }
     });
   },
+  setLastRun({ commit, state }, lastrun) {
+    return new Promise((resolve) => {
+      commit(types.SET_LASTRUN, lastrun);
+      resolve();
+    });
+  },
 };
 
 export const mutations = {
   [types.INSERT_TESTCASE](state, testcase) {
     state.testcases.push(testcase);
+  },
+  [types.SET_LASTRUN](state, lastrun) {
+    state.lastrun = lastrun;
   },
 };

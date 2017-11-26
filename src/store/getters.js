@@ -4,4 +4,5 @@ export default {
     else if (a.name > b.name) return 1;
     return 0;
   }),
+  lastRun: state => state.lastrun,
 };

@@ -1,9 +1,9 @@
-import { STORAGE_KEY } from './mutation-types';
+import { STORAGE_KEY_TESTCASES, STORAGE_KEY_LASTRUN } from './mutation-types';
 
 const localStoragePlugin = (store) => {
-  store.subscribe((mutation, { testcases }) => {
-    console.debug(`store.subscribe trigger ${testcases}`);
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(testcases));
+  store.subscribe((mutation, { testcases, lastrun }) => {
+    window.localStorage.setItem(STORAGE_KEY_TESTCASES, JSON.stringify(testcases));
+    window.localStorage.setItem(STORAGE_KEY_LASTRUN, JSON.stringify(lastrun));
   });
 };
 
