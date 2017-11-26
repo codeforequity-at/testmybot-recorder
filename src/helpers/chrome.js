@@ -16,7 +16,7 @@ function getMatchingTabs(url) {
     } else {
       chrome.tabs.query({ url }, (tabs) => {
         if (tabs) {
-          tabs.forEach(tab => (console.log(tab.url)));
+          tabs.forEach(tab => (console.debug(tab.url)));
 
           resolve(tabs.map(tab => (
             {
@@ -41,20 +41,20 @@ function prepareTab(tab) {
   return new Promise((resolve, reject) => {
     chrome.tabs.sendMessage(tab.id, { action: 'ping' }, (response) => {
       if (response && response.action === 'pong') {
-        console.log(`content script already present in tab ${tab.id}  ${JSON.stringify(response)}`);
+        console.info(`content script already present in tab ${tab.id}  ${JSON.stringify(response)}`);
         if (response.err) {
           reject(response.err);
         } else {
           resolve();
         }
       } else {
-        console.log(`injecting content script in tab ${tab.id}`);
+        console.debug(`injecting content script in tab ${tab.id}`);
         chrome.tabs.executeScript(tab.id, { file: '/node_modules/jquery/dist/jquery.min.js' }, () => {
           chrome.tabs.executeScript(tab.id, { file: '/chrome/content_script.js' }, () => {
             async.retry({ times: 10, interval: 3000 }, (cb) => {
               chrome.tabs.sendMessage(tab.id, { action: 'ping' }, (response1) => {
                 if (response1 && response1.action === 'pong') {
-                  console.log(`content script answered to ping ${JSON.stringify(response1)}`);
+                  console.info(`content script answered to ping ${JSON.stringify(response1)}`);
                   if (response1.err) {
                     cb(response1.err);
                   } else {
@@ -80,7 +80,7 @@ function prepareTab(tab) {
 
 function startRecording(tab, cb) {
   const onMessage = (request, sender) => {
-    console.log(`got chrome message: ${JSON.stringify(request)} from ${JSON.stringify(sender)}`);
+    console.debug(`got chrome message: ${JSON.stringify(request)} from ${JSON.stringify(sender)}`);
     if (sender.tab && sender.tab.id === tab.id) {
       cb(request);
     }
@@ -98,7 +98,7 @@ function openTestRunnerTab(url) {
     thenChrome.tabs.create({ url, active: false }).then((tab) => {
       prepareTab(tab).then(() => {
         thenChrome.debugger.attach({ tabId: tab.id }, PROTOCOL_VERSION).then(() => {
-          console.log(`tab ${url} created ${tab.id}, content-script loaded, debugger attached, ready for test runner.`);
+          console.info(`tab ${url} created ${tab.id}, content-script loaded, debugger attached, ready for test runner.`);
           resolve(tab);
         }).catch((err) => {
           reject(err);
@@ -107,7 +107,7 @@ function openTestRunnerTab(url) {
         reject(err);
       });
     }).catch((err) => {
-      console.log(err);
+      console.error(err);
       reject(err);
     });
   });

@@ -128,13 +128,13 @@ export default {
       this.selectedTab = null;
 
       bs.getMatchingTabs('*://www.messenger.com/*').then((tabs) => {
-        console.log(`getMatchingTabs ${JSON.stringify(tabs)}`);
+        console.debug(`getMatchingTabs ${JSON.stringify(tabs)}`);
         this.tabs = tabs;
         if (this.tabs) {
           this.selectedTab = this.tabs.find(tab => tab.ready);
         }
       }, (err) => {
-        console.log(err);
+        console.error(err);
       });
     },
     isRecording() {
@@ -148,7 +148,7 @@ export default {
       bs.prepareTab(this.selectedTab).then(() => {
         this.stopRecordingCallback = bs.startRecording(this.selectedTab,
           (message) => {
-            console.log(message);
+            console.debug(message);
             this.recordedMessages.push(
               Object.assign(message, { index: this.recordedMessages.length }));
           });

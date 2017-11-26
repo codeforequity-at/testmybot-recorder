@@ -4,7 +4,7 @@ var target = null;
 var observer = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
     
-    console.log(mutation);
+    // console.log(mutation);
     if (mutation.addedNodes && mutation.addedNodes.length > 0) {
       var addedNode = mutation.addedNodes[0];
       
