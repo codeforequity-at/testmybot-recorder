@@ -3,7 +3,7 @@ import escapeStringRegexp from 'escape-string-regexp';
 import bs from './browsersupport';
 import Queue from './queue';
 
-function runTestcase(testcase) {
+function runTestcase(testcase, resetcommand) {
   return new Promise((testcaseResolve, testcaseReject) => {
     testcase.status = 'running';
 
@@ -28,6 +28,14 @@ function runTestcase(testcase) {
             }
           });
         recordingStarted();
+      },
+
+      (resetCompleted) => {
+        if (resetcommand) {
+          bs.sendMessage(tab, resetcommand).then(() => resetCompleted()).catch(resetCompleted);
+        } else {
+          resetCompleted();
+        }
       },
 
       (testcaseCompleted) => {
@@ -92,7 +100,7 @@ function runTestcase(testcase) {
   });
 }
 
-function runTestsuite(testcases) {
+function runTestsuite(testcases, resetcommand) {
   return new Promise((resolve) => {
     testcases.forEach((testcase) => {
       testcase.status = 'queued';
@@ -100,7 +108,7 @@ function runTestsuite(testcases) {
     });
     async.eachSeries(testcases, (testcase, cb) => {
       console.info(`testcase ${testcase.spec.name} running`);
-      runTestcase(testcase).then(() => {
+      runTestcase(testcase, resetcommand).then(() => {
         console.info(`testcase ${testcase.spec.name} success`);
         cb();
       }).catch((err) => {

@@ -27,9 +27,20 @@
       </div>
 			<div class="col-sm-6">
         <div class="row">
-          <div class="col-xs-12">
+          <div class="col-sm-12">
             <b-button :disabled="status !== 'idle'" @click="runAll"><i class="fa fa-play fa-4x text-success"></i></b-button>
             <b-button :disabled="status !== 'running'" @click="stopAll"><i class="fa fa-stop fa-4x"></i></b-button>
+          </div>
+        </div>
+        <hr/>
+        <div class="row">
+          <div class="col-sm-12">
+            <b-input-group>
+              <b-input-group-addon>
+                Reset Command:
+              </b-input-group-addon>          
+              <b-form-input type="text" size="lg" v-model="myResetCommand" ></b-form-input>
+            </b-input-group>              
           </div>
         </div>
         <hr/>
@@ -72,11 +83,13 @@ export default {
     ...mapGetters([
       'allTestcases',
       'lastRun',
+      'resetCommand',
     ]),
   },
   data() {
     return {
       selectedTestcase: null,
+      myResetCommand: null,
       testcases: [],
       status: 'idle', // 'running', 'ready'
       tab: null,
@@ -91,6 +104,7 @@ export default {
   methods: {
     ...mapActions([
       'setLastRun',
+      'setResetCommand',
     ]),
     testcaseSelected(tc) {
       this.selectedTestcase = tc;
@@ -116,9 +130,11 @@ export default {
           return testcase;
         });
       }
+      this.myResetCommand = this.resetCommand;
     },
     runAll() {
-      testrunner.runTestsuite(this.testcases).then(() => {
+      this.setResetCommand(this.myResetCommand);
+      testrunner.runTestsuite(this.testcases, this.myResetCommand).then(() => {
         this.setLastRun(this.testcases.map(tc => ({
           name: tc.spec.name,
           status: tc.status,

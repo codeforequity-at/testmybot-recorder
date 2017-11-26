@@ -3,6 +3,7 @@ import * as types from './mutation-types';
 export const initialState = {
   testcases: JSON.parse(window.localStorage.getItem(types.STORAGE_KEY_TESTCASES) || '[]'),
   lastrun: JSON.parse(window.localStorage.getItem(types.STORAGE_KEY_LASTRUN) || '[]'),
+  resetcommand: window.localStorage.getItem(types.STORAGE_KEY_RESETCOMMAND),
 };
 
 export const actions = {
@@ -22,6 +23,12 @@ export const actions = {
       resolve();
     });
   },
+  setResetCommand({ commit, state }, resetcommand) {
+    return new Promise((resolve) => {
+      commit(types.SET_RESETCOMMAND, resetcommand);
+      resolve();
+    });
+  },
 };
 
 export const mutations = {
@@ -30,5 +37,8 @@ export const mutations = {
   },
   [types.SET_LASTRUN](state, lastrun) {
     state.lastrun = lastrun;
+  },
+  [types.SET_RESETCOMMAND](state, resetcommand) {
+    state.resetcommand = resetcommand;
   },
 };

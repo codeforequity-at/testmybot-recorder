@@ -5,4 +5,5 @@ export default {
     return 0;
   }),
   lastRun: state => state.lastrun,
+  resetCommand: state => state.resetcommand,
 };
