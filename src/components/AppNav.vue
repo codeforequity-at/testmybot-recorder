@@ -5,6 +5,19 @@
         <img class="img-fluid img-thumbnail" src="../assets/testmybot_logo.png">
       </div>
     </div>
+    <div class="row d-flex flex-column">
+        <b-dropdown 
+          size="lg"
+          :text="selectedsuite.name"
+          class="flex-column">
+          <b-dropdown-header v-if="testsuites.length > 0">Select Test Suite</b-dropdown-header>
+          <b-dropdown-item-button v-for="ts in testsuites">
+            {{ ts.name }}
+          </b-dropdown-item-button>
+          <b-dropdown-divider></b-dropdown-divider>
+          <b-dropdown-item-button>New Test Suite</b-dropdown-item-button>
+        </b-dropdown>
+    </div>
     <div class="row">
       <div class="col-xs-12">
         <ul class="nav nav-pills flex-column">
@@ -29,6 +42,15 @@
 <script>
 export default {
   name: 'AppNav',
+  data() {
+    return {
+      testsuites: [
+        { name: 'Calculator' },
+        { name: 'Oktocheck' },
+      ],
+      selectedsuite: { name: 'Calculator' },
+    };
+  },
 };
 </script>
 
