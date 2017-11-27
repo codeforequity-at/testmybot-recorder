@@ -3,7 +3,7 @@ import * as types from './mutation-types';
 export const initialState = {
   testcases: JSON.parse(window.localStorage.getItem(types.STORAGE_KEY_TESTCASES) || '[]'),
   lastrun: JSON.parse(window.localStorage.getItem(types.STORAGE_KEY_LASTRUN) || '[]'),
-  resetcommand: window.localStorage.getItem(types.STORAGE_KEY_RESETCOMMAND),
+  resetcommand: window.localStorage.getItem(types.STORAGE_KEY_RESETCOMMAND) || '',
 };
 
 export const actions = {

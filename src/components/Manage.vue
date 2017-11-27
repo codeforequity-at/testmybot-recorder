@@ -28,11 +28,30 @@
             <h3>{{ selectedTestcase.name }}</h3>
           </div>
         </div>
+        <hr/>
         <div class="row">
           <div class="col-sm-12">
-            <a :href="selectedTestcase.url" target="_blank">Open Facebook Messenger</a>
+            <b-button-group size="lg">
+              <b-dropdown split size="lg" variant="primary">
+                <template slot="button-content">
+                  <i class="fa fa-pencil"></i> Edit
+                </template>
+                <b-dropdown-item><i class="fa fa-comment"></i> Edit Script</b-dropdown-item>
+                <b-dropdown-item><i class="fa fa-trash"></i> Delete</b-dropdown-item>
+              </b-dropdown>
+              <b-dropdown split size="lg"  variant="primary">
+                <template slot="button-content">
+                  <i class="fa fa-download"></i> Export
+                </template>
+                <b-dropdown-item><i class="fa fa-github"></i> ... to Github</b-dropdown-item>
+                <b-dropdown-item><i class="fa fa-file-text"></i> ... as *.convo</b-dropdown-item>
+                <b-dropdown-item><i class="fa fa-jsfiddle"></i> ... as *.json</b-dropdown-item>
+              </b-dropdown>
+              <b-button :href="selectedTestcase.url" target="_blank"  variant="primary"><i class="fa fa-facebook"></i> Open Chatbot</b-button>
+            </b-button-group>
           </div>
         </div>
+        <hr/>
         <div class="row">
           <div class="col-sm-12">
             <chat-view v-bind:convo="selectedTestcase.convo"></chat-view>

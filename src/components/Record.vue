@@ -3,7 +3,6 @@
 		<div class="row">
 			<div class="col-xs-12">
         <h1>Record a Chatbot Conversation</h1>
-        <h3 class="mb-2 text-muted">... and save as test case</h3>
 			</div>
 		</div>
     <hr/>

@@ -5,11 +5,13 @@
         <img class="img-fluid img-thumbnail" src="../assets/testmybot_logo.png">
       </div>
     </div>
+    <hr/>
     <div class="row d-flex flex-column">
-        <b-dropdown 
+        <b-dropdown split
           size="lg"
           :text="selectedsuite.name"
-          class="flex-column">
+          class="w-100"
+          variant="primary">
           <b-dropdown-header v-if="testsuites.length > 0">Select Test Suite</b-dropdown-header>
           <b-dropdown-item-button v-for="ts in testsuites">
             {{ ts.name }}
@@ -18,6 +20,7 @@
           <b-dropdown-item-button>New Test Suite</b-dropdown-item-button>
         </b-dropdown>
     </div>
+    <hr/>
     <div class="row">
       <div class="col-xs-12">
         <ul class="nav nav-pills flex-column">

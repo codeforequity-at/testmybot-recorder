@@ -44,6 +44,22 @@
           </div>
         </div>
         <hr/>
+        <div class="row">
+          <div class="col-sm-12">
+            <b-button-group size="lg">
+              <b-dropdown split size="lg"  variant="primary">
+                <template slot="button-content">
+                  <i class="fa fa-download"></i> Export Test Results
+                </template>
+                <b-dropdown-item><i class="fa fa-pie-chart"></i> ... as Test Report (*.pdf)</b-dropdown-item>
+                <b-dropdown-item><i class="fa fa-file-excel-o"></i> ... as CSV (*.csv)</b-dropdown-item>
+                <b-dropdown-item><i class="fa fa-file-text"></i> ... as Text (*.txt)</b-dropdown-item>
+                <b-dropdown-item><i class="fa fa-bug"></i> ... to JIRA</b-dropdown-item>
+              </b-dropdown>
+            </b-button-group>
+          </div>
+        </div>
+        <hr/>
         <div class="row" v-if="selectedTestcase">
           <div class="col-sm-12">
             <div class="row">
