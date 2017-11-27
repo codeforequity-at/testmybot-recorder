@@ -181,7 +181,7 @@ export default {
       this.addTestcase(newTestcase).then(() => {
         this.showErrorMessage = null;
         this.showSuccessMessage = `Conversation saved as test case "${this.saveTestcaseName}"`;
-        this.recordedMessages = null;
+        this.recordedMessages = [];
       }, (err) => {
         this.showErrorMessage = err;
         this.showSuccessMessage = null;
