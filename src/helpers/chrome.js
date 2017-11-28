@@ -184,6 +184,16 @@ function sendMessage(tab, text) {
   return arr.reduce((res, char) => res.then(() => sendSingleChar(tab, char)), Promise.resolve());
 }
 
+function saveTextFile(contents, filename) {
+  return new Promise((resolve, reject) => {
+    const blob = new Blob([contents], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    thenChrome.downloads.download({ url, filename, saveAs: true })
+      .then(() => resolve())
+      .catch(err => reject(err));
+  });
+}
+
 export default {
   isAvailable,
   getMatchingTabs,
@@ -192,4 +202,5 @@ export default {
   openTestRunnerTab,
   sendMessage,
   closeTestRunnerTab,
+  saveTextFile,
 };

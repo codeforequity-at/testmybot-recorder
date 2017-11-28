@@ -16,6 +16,7 @@
 	"debugger",
     "storage",
 	"tabs",
-	"*://www.messenger.com/*"
+	"*://www.messenger.com/*",
+	"downloads"
   ]
 }

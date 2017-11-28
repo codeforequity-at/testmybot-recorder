@@ -44,10 +44,10 @@
                   <i class="fa fa-download"></i> Export
                 </template>
                 <b-dropdown-item><i class="fa fa-github"></i> ... to Github</b-dropdown-item>
-                <b-dropdown-item><i class="fa fa-file-text"></i> ... as *.convo</b-dropdown-item>
+                <b-dropdown-item @click="exportAsConvo(selectedTestcase)"><i class="fa fa-file-text"></i> ... as *.convo</b-dropdown-item>
                 <b-dropdown-item><i class="fa fa-jsfiddle"></i> ... as *.json</b-dropdown-item>
               </b-dropdown>
-              <b-button :href="selectedTestcase.url" target="_blank"  variant="primary"><i class="fa fa-facebook"></i> Open Chatbot</b-button>
+              <b-button :href="selectedTestcase.url" target="_blank" variant="primary"><i class="fa fa-facebook"></i> Open Chatbot</b-button>
             </b-button-group>
           </div>
         </div>
@@ -65,7 +65,9 @@
 <script>
 
 import { mapGetters } from 'vuex';
+import slugify from 'slugify';
 import ChatView from '@/components/partial/ChatView';
+import bs from '@/helpers/browsersupport';
 
 export default {
   name: 'Manage',
@@ -88,6 +90,22 @@ export default {
   methods: {
     testcaseSelected(tc) {
       this.selectedTestcase = tc;
+    },
+    exportAsConvo(tc) {
+      const lines = [];
+      lines.push(tc.name.replace('#', ''));
+      lines.push('');
+      tc.convo.forEach((el) => {
+        lines.push(`#${el.from}`);
+        lines.push(el.text);
+        lines.push('');
+      });
+      const content = lines.join('\r\n');
+      const filename = `${slugify(tc.name)}.convo.txt`;
+
+      bs.saveTextFile(content, filename)
+        .then(() => { })
+        .catch(console.log);
     },
   },
 };

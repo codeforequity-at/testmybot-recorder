@@ -47,6 +47,11 @@ const mock = {
       resolve();
     });
   },
+  saveTextFile() {
+    return new Promise((resolve) => {
+      resolve();
+    });
+  },
 };
 
 const exp = Object.assign({}, mock);
