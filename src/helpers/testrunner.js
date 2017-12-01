@@ -9,12 +9,21 @@ function runTestcase(testcase, resetcommand) {
 
     const queue = new Queue();
 
+    let as = null;
     let tab = null;
     let stopRecording = null;
 
     async.series([
+
+      (automationOpened) => {
+        bs.getAutomationBySite(testcase.spec.url).then((r) => {
+          as = r;
+          automationOpened();
+        }).catch(automationOpened);
+      },
+
       (tabOpened) => {
-        bs.openTestRunnerTab(testcase.spec.url).then((openedTab) => {
+        as.openTestRunnerTab(testcase.spec.url).then((openedTab) => {
           tab = openedTab;
           tabOpened();
         }).catch(tabOpened);
@@ -32,7 +41,7 @@ function runTestcase(testcase, resetcommand) {
 
       (resetCompleted) => {
         if (resetcommand) {
-          bs.sendMessage(tab, resetcommand).then(() => resetCompleted()).catch(resetCompleted);
+          as.sendMessage(tab, resetcommand).then(() => resetCompleted()).catch(resetCompleted);
         } else {
           resetCompleted();
         }
@@ -44,11 +53,11 @@ function runTestcase(testcase, resetcommand) {
           if (convomsg.from === 'me') {
             console.debug(`testcase ${testcase.spec.name} sending to bot ${convomsg.text}`);
             testcase.log.push(`sending to bot: ${convomsg.text}`);
-            bs.sendMessage(tab, convomsg.text).then(() => cb()).catch(cb);
+            as.sendMessage(tab, convomsg.text).then(() => cb()).catch(cb);
           } else if (convomsg.from === 'bot') {
             console.debug(`testcase ${testcase.spec.name} expecting from bot: ${convomsg.text}`);
             testcase.log.push(`expecting from bot: ${convomsg.text}`);
-            queue.pop(10000).then((msg) => {
+            queue.pop(30000).then((msg) => {
               console.debug(`testcase ${testcase.spec.name} got from bot: ${msg}`);
               testcase.log.push(`got from bot: ${msg}`);
               const checkRegexp = new RegExp(escapeStringRegexp(convomsg.text), 'i');
@@ -81,7 +90,7 @@ function runTestcase(testcase, resetcommand) {
 
       (tabClosed) => {
         if (testcase.status === 'success') {
-          setTimeout(() => bs.closeTestRunnerTab(tab), 3000);
+          setTimeout(() => as.closeTestRunnerTab(tab), 1000);
         }
         tabClosed();
       },
