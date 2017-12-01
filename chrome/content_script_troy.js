@@ -4,36 +4,28 @@ var target = null;
 var observer = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
     
-    // console.log(mutation);
+    console.log(mutation);
+    
     if (mutation.addedNodes && mutation.addedNodes.length > 0) {
       var addedNode = mutation.addedNodes[0];
       
-      if ($(addedNode).hasClass('_o46') && $(addedNode).hasClass('_3i_m')) {
-        var meText = cleanString(addedNode.innerText);
-        console.log(`found meNode: ${meText}`);
-        chrome.extension.sendMessage({ from: 'me', text: meText });
-        return;
-      }
-      if ($(addedNode).hasClass('_o46')) {
-        var botText = cleanString(addedNode.innerText);
-        console.log(`found botNode: ${botText}`);
-        chrome.extension.sendMessage({ from: 'bot', text: botText });
-        return;
-      }
-      
-      var meNode = $('div._o46._3i_m', addedNode);
-      if (meNode && meNode.length > 0 && meNode[0].innerText) {
-        var meText = cleanString(meNode[0].innerText);
-        console.log(`found meNode: ${meText}`);
-        chrome.extension.sendMessage({ from: 'me', text: meText });
-        return;
-      }
-      var botNode = $('div._o46', addedNode);
-      if (botNode && botNode.length > 0 && botNode[0].innerText) {
-        var botText = cleanString(botNode[0].innerText);
-        console.log(`found botNode: ${botText}`);
-        chrome.extension.sendMessage({ from: 'bot', text: botText });
-        return;
+      if ($(addedNode).hasClass('segments')) {
+        var chatNode = $(addedNode).children().get(0);
+        if (chatNode && $(chatNode).hasClass('from-user')) {
+          var meText = cleanString(chatNode.innerText);
+          console.log(`found meNode: ${meText}`);
+          chrome.extension.sendMessage({ from: 'me', text: meText });
+          return;
+        }
+        if (chatNode && $(chatNode).hasClass('from-watson')) {
+          var textNode = $(chatNode).find('div.text').get(0);
+          if (textNode) {
+            var botText = cleanString(textNode.innerText);
+            console.log(`found botNode: ${botText}`);
+            chrome.extension.sendMessage({ from: 'bot', text: botText });
+            return;
+          }
+        }
       }
     }
   });
@@ -45,7 +37,7 @@ $(document).ready(function() {
 });
 
 function startMutationObserver() {
-  target = $('div[role="main"]').get(0);
+  target = $('#scrollingChat').get(0);
   if (target) {
     console.log('testmybot content_script starting mutation observer ...');
     var config = { attributes: false, childList:true, subtree: true };
@@ -57,7 +49,6 @@ function startMutationObserver() {
 
 function cleanString(str) {
   str = $.trim(str);
-  str = str.replace(/[^\x00-\x7F]/g, '');
   str = str.split(/\s/).join(' ');
   return str;
 }
