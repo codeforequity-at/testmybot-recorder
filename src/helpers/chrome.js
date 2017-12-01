@@ -27,52 +27,84 @@ function getMatchingTabs(url) {
             }
           )));
         } else {
-          reject('no matching tabs');
+          resolve([]);
         }
       }).catch(reject);
     }
   });
 }
 
-function prepareTab(tab) {
+function getAutomationTabs() {
   return new Promise((resolve, reject) => {
-    chrome.tabs.sendMessage(tab.id, { action: 'ping' }, (response) => {
-      if (response && response.action === 'pong') {
-        console.info(`content script already present in tab ${tab.id}  ${JSON.stringify(response)}`);
-        if (response.err) {
-          reject(response.err);
+    const promises = [
+      getMatchingTabs('*://www.messenger.com/*'),
+    ];
+    Promise.all(promises).then((alltabs) => {
+      resolve(alltabs.reduce((acc, val) => acc.concat(val), []));
+    }).catch(reject);
+  });
+}
+
+function getAutomationBySite(url) {
+  return new Promise((resolve, reject) => {
+    if (url.match('messenger.com')) {
+      resolve(chromeFb);
+    } else {
+      reject(`no chrome automation found for site ${url}`);
+    }
+  });
+}
+
+function getContentScriptBySite(url) {
+  if (url.match('messenger.com')) {
+    return '/chrome/content_script_fbmessenger.js';
+  }
+  return null;
+}
+
+function prepareTab(tab) {
+  const contentScript = getContentScriptBySite(tab.url);
+  if (contentScript) {
+    return new Promise((resolve, reject) => {
+      chrome.tabs.sendMessage(tab.id, { action: 'ping' }, (response) => {
+        if (response && response.action === 'pong') {
+          console.info(`content script already present in tab ${tab.id}  ${JSON.stringify(response)}`);
+          if (response.err) {
+            reject(response.err);
+          } else {
+            resolve();
+          }
         } else {
-          resolve();
-        }
-      } else {
-        console.debug(`injecting content script in tab ${tab.id}`);
-        chrome.tabs.executeScript(tab.id, { file: '/node_modules/jquery/dist/jquery.min.js' }, () => {
-          chrome.tabs.executeScript(tab.id, { file: '/chrome/content_script.js' }, () => {
-            async.retry({ times: 10, interval: 3000 }, (cb) => {
-              chrome.tabs.sendMessage(tab.id, { action: 'ping' }, (response1) => {
-                if (response1 && response1.action === 'pong') {
-                  console.info(`content script answered to ping ${JSON.stringify(response1)}`);
-                  if (response1.err) {
-                    cb(response1.err);
+          console.debug(`injecting content script in tab ${tab.id}`);
+          chrome.tabs.executeScript(tab.id, { file: '/node_modules/jquery/dist/jquery.min.js' }, () => {
+            chrome.tabs.executeScript(tab.id, { file: '/chrome/content_script.js' }, () => {
+              async.retry({ times: 10, interval: 3000 }, (cb) => {
+                chrome.tabs.sendMessage(tab.id, { action: 'ping' }, (response1) => {
+                  if (response1 && response1.action === 'pong') {
+                    console.info(`content script answered to ping ${JSON.stringify(response1)}`);
+                    if (response1.err) {
+                      cb(response1.err);
+                    } else {
+                      cb();
+                    }
                   } else {
-                    cb();
+                    cb('content script did not answer to ping');
                   }
+                });
+              }, (err) => {
+                if (err) {
+                  reject('content script did not answer to ping');
                 } else {
-                  cb('content script did not answer to ping');
+                  resolve();
                 }
               });
-            }, (err) => {
-              if (err) {
-                reject('content script did not answer to ping');
-              } else {
-                resolve();
-              }
             });
           });
-        });
-      }
+        }
+      });
     });
-  });
+  }
+  return Promise.resolve();
 }
 
 function startRecording(tab, cb) {
@@ -100,18 +132,9 @@ function saveTextFile(contents, filename) {
   });
 }
 
-function getAutomationBySite(url) {
-  return new Promise((resolve, reject) => {
-    if (url.match('messenger.com')) {
-      resolve(chromeFb);
-    } else {
-      reject(`no chrome automation found for site ${url}`);
-    }
-  });
-}
-
 export default {
   isAvailable,
+  getAutomationTabs,
   getMatchingTabs,
   prepareTab,
   startRecording,

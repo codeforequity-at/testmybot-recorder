@@ -126,8 +126,8 @@ export default {
       this.tabs = null;
       this.selectedTab = null;
 
-      bs.getMatchingTabs('*://www.messenger.com/*').then((tabs) => {
-        console.debug(`getMatchingTabs ${JSON.stringify(tabs)}`);
+      bs.getAutomationTabs().then((tabs) => {
+        console.debug(`getAutomationTabs ${JSON.stringify(tabs)}`);
         this.tabs = tabs;
         if (this.tabs) {
           this.selectedTab = this.tabs.find(tab => tab.ready);
