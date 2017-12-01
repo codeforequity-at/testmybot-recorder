@@ -38,6 +38,7 @@ function getAutomationTabs() {
   return new Promise((resolve, reject) => {
     const promises = [
       getMatchingTabs('*://www.messenger.com/*'),
+      getMatchingTabs('*://www.drei.at/*'),
     ];
     Promise.all(promises).then((alltabs) => {
       resolve(alltabs.reduce((acc, val) => acc.concat(val), []));
@@ -58,6 +59,8 @@ function getAutomationBySite(url) {
 function getContentScriptBySite(url) {
   if (url.match('messenger.com')) {
     return '/chrome/content_script_fbmessenger.js';
+  } else if (url.match('drei.at')) {
+    return '/chrome/content_script_troy.js';
   }
   return null;
 }

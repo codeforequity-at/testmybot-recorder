@@ -17,6 +17,7 @@
     "storage",
 	"tabs",
 	"*://www.messenger.com/*",
+	"*://www.drei.at/*",
 	"downloads"
   ]
 }

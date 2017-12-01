@@ -25,7 +25,7 @@
           </b-list-group-item>
         </b-list-group>
         <b-alert show variant="warning" v-if="!tabs || tabs.length === 0">
-          Please open <a href="https://www.messenger.com" target="_blank">Facebook Messenger</a> and navigate to your chatbot.
+          Please open <a href="https://www.drei.at" target="_blank">Troy</a>.
         </b-alert>	
         <a href="#" @click="getTabs">Reload</a>
       </div>
