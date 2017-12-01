@@ -77,7 +77,7 @@ function prepareTab(tab) {
         } else {
           console.debug(`injecting content script in tab ${tab.id}`);
           chrome.tabs.executeScript(tab.id, { file: '/node_modules/jquery/dist/jquery.min.js' }, () => {
-            chrome.tabs.executeScript(tab.id, { file: '/chrome/content_script.js' }, () => {
+            chrome.tabs.executeScript(tab.id, { file: contentScript }, () => {
               async.retry({ times: 10, interval: 3000 }, (cb) => {
                 chrome.tabs.sendMessage(tab.id, { action: 'ping' }, (response1) => {
                   if (response1 && response1.action === 'pong') {
